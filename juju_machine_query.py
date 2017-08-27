@@ -5,7 +5,7 @@
 
 * List units hosted on a given machine
 * Optionally list subordinate units
-* Optionally list units hosted on LXCs
+* Optionally list units hosted on LXCs/LXDs
 * Output results in CSV format ready to be passed to `juju run`
 * Compatible with Juju 1 and Juju 2
 """
@@ -33,7 +33,7 @@ def parse_arguments():
     )
     parser.add_argument(
         "-l", "--lxc", action="store_true",
-        help="include units hosted on LXCs"
+        help="include units hosted on LXCs/LXDs"
     )
     parser.add_argument(
         "-s", "--subordinates", action="store_true",
@@ -76,7 +76,7 @@ def query_machine(machine_id, software, status):
         if "units" in status[software][app]
         for principal in status[software][app]["units"]
         if re.match(
-            "^{0}$|{0}\/lxc".format(machine_id),
+            "^{0}$|{0}\/lx".format(machine_id),
             status[software][app]["units"][principal]["machine"]
         )
     ]
@@ -86,7 +86,7 @@ def query_machine(machine_id, software, status):
 def output_results(units, machine_id, csv_format, include_lxcs,
                    include_subordinates):
     """Output query results."""
-    # Filter LXCs from unit list, if necessary.
+    # Filter LXCs/LXDs from unit list, if necessary.
     if include_lxcs:
         output = units
     else:
